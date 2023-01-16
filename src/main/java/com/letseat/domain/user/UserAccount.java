@@ -1,6 +1,5 @@
 package com.letseat.domain.user;
 
-import com.letseat.api.response.UserSignUpDto;
 import com.letseat.domain.BaseTimeEntity;
 import lombok.*;
 
@@ -38,15 +37,5 @@ public class UserAccount extends BaseTimeEntity {
         this.phone = phone;
         this.address = address;
         this.userGrade = userGrade;
-    }
-
-    public static UserAccount toEntity(UserSignUpDto userSignUpDto) {
-        return UserAccount.builder()
-                .nickname(userSignUpDto.getNickname())
-                .password(userSignUpDto.getPassword())
-                .email(userSignUpDto.getEmail())
-                .phone(userSignUpDto.getPhone())
-                .userGrade(UserRole.BASIC)
-                .build();
     }
 }

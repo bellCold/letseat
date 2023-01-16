@@ -4,7 +4,9 @@ import com.letseat.api.exception.LetsEatException;
 import com.letseat.api.response.UserSignUpDto;
 import com.letseat.domain.user.UserAccount;
 import com.letseat.domain.user.UserRepository;
+import com.letseat.domain.user.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static com.letseat.api.exception.ErrorCode.DUPLICATE_RESOURCE;
@@ -14,15 +16,18 @@ import static com.letseat.api.exception.ErrorCode.DUPLICATE_RESOURCE;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void createUser(UserSignUpDto userSignUpDto) {
-        if (userSignUpDto == null) {
-            throw new RuntimeException();
-        }
-
         validate(userSignUpDto.getNickname(), userSignUpDto.getEmail());
 
-        UserAccount newUserAccount = UserAccount.toEntity(userSignUpDto);
+        UserAccount newUserAccount = UserAccount.builder()
+                .nickname(userSignUpDto.getNickname())
+                .password(passwordEncoder.encode(userSignUpDto.getPassword()))
+                .phone(userSignUpDto.getPhone())
+                .address(userSignUpDto.getAddress())
+                .userGrade(UserRole.BASIC)
+                .build();
 
         userRepository.save(newUserAccount);
     }
