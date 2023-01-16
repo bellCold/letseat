@@ -1,4 +1,4 @@
-package com.letseat.api.requset;
+package com.letseat.api.response;
 
 import com.letseat.api.exception.ErrorCode;
 import lombok.Builder;

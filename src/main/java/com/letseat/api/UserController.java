@@ -1,6 +1,6 @@
 package com.letseat.api;
 
-import com.letseat.api.requset.UserSignUpDto;
+import com.letseat.api.requset.UserSignUpRequestDto;
 import com.letseat.application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<String> signUp(@Valid @RequestBody UserSignUpDto userSignUpDto) {
-        userService.createUser(userSignUpDto);
+    public ResponseEntity<String> signUp(@Valid @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
+        userService.createUser(userSignUpRequestDto);
         return ResponseEntity.ok().build();
     }
 }

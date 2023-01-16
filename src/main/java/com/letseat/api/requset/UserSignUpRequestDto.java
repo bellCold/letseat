@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Getter
-public class UserSignUpDto {
+public class UserSignUpRequestDto {
 
     @NotBlank
     @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-0_-]{3,20}$")
