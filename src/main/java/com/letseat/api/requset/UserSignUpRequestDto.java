@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 public class UserSignUpRequestDto {
 
     @NotBlank
-    @Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-0_-]{3,20}$")
+    @Length(min = 3, max = 20)
     private String nickname;
 
     @NotBlank
