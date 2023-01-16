@@ -1,7 +1,7 @@
 package com.letseat.global.exception;
 
 import com.letseat.api.exception.LetsEatException;
-import com.letseat.api.response.ErrorResponseDto;
+import com.letseat.api.requset.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;

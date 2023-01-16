@@ -1,7 +1,7 @@
 package com.letseat.application;
 
 import com.letseat.api.exception.LetsEatException;
-import com.letseat.api.response.UserSignUpDto;
+import com.letseat.api.requset.UserSignUpDto;
 import com.letseat.domain.user.UserAccount;
 import com.letseat.domain.user.UserRepository;
 import com.letseat.domain.user.UserRole;

@@ -1,6 +1,6 @@
 package com.letseat.api;
 
-import com.letseat.api.response.UserSignUpDto;
+import com.letseat.api.requset.UserSignUpDto;
 import com.letseat.application.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
