@@ -48,4 +48,9 @@ public class UserService {
         userAccount.change(userUpdateRequestDto, passwordEncoder.encode(userUpdateRequestDto.getPassword()));
     }
 
+    @Transactional
+    public void delete(Long id) {
+        UserAccount userAccount = userRepository.findById(id).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        userRepository.delete(userAccount);
+    }
 }

@@ -1,2 +1,9 @@
-package com.letseat.api.requset;public class WriteContentsRequestDto {
+package com.letseat.api.requset;
+
+import lombok.Getter;
+
+@Getter
+public class WriteContentsRequestDto {
+    private String title;
+    private String contents;
 }

@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.letseat.api.exception.ErrorCode.DUPLICATE_RESOURCE;
 import static com.letseat.api.exception.ErrorCode.USER_NOT_FOUND;
 import static com.letseat.domain.user.UserRole.BASIC;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
@@ -28,9 +29,11 @@ class UserAccountTest {
     @Autowired
     UserService userService;
 
+    private UserAccount userAccount;
+
     @BeforeEach
     public void createAccount() {
-        UserAccount userAccount = UserAccount.builder()
+        userAccount = UserAccount.builder()
                 .nickname("nickname")
                 .password(passwordEncoder.encode("12345678"))
                 .userGrade(BASIC)
@@ -85,5 +88,15 @@ class UserAccountTest {
                 .build();
 
         assertThatThrownBy(() -> userService.createUser(userSignUpRequestDto)).isInstanceOf(LetsEatException.class);
+    }
+
+    @DisplayName("회원 탈퇴 테스트")
+    @Test
+    public void leaveUserTest() {
+        UserAccount findUser = userRepository.findById(userAccount.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        userService.delete(findUser.getId());
+
+        assertThatThrownBy(() -> userRepository.findById(findUser.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND)))
+                .isInstanceOf(LetsEatException.class);
     }
 }

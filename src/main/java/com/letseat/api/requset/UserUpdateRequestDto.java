@@ -2,12 +2,13 @@ package com.letseat.api.requset;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class UserUpdateRequestDto {
 
     @NotBlank
@@ -19,4 +20,10 @@ public class UserUpdateRequestDto {
 
     @NotBlank
     private String phone;
+
+    public UserUpdateRequestDto(String password, String address, String phone) {
+        this.password = password;
+        this.address = address;
+        this.phone = phone;
+    }
 }
