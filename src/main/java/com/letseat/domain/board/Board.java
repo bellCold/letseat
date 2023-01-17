@@ -1,7 +1,7 @@
 package com.letseat.domain.board;
 
 import com.letseat.domain.BaseTimeEntity;
-import com.letseat.domain.user.UserAccount;
+import com.letseat.domain.user.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,12 +28,12 @@ public class Board extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private UserAccount userAccount;
+    private Account account;
 
     @Builder
-    public Board(String title, String contents, UserAccount userAccount) {
+    public Board(String title, String contents, Account account) {
         this.title = title;
         this.contents = contents;
-        this.userAccount = userAccount;
+        this.account = account;
     }
 }

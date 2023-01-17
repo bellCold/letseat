@@ -20,20 +20,20 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
-class UserAccountTest {
+class AccountTest {
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository accountRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     UserService userService;
 
-    private UserAccount userAccount;
+    private Account account;
 
     @BeforeEach
     public void createAccount() {
-        userAccount = UserAccount.builder()
+        account = Account.builder()
                 .nickname("nickname")
                 .password(passwordEncoder.encode("12345678"))
                 .userGrade(BASIC)
@@ -42,13 +42,13 @@ class UserAccountTest {
                 .email("Success@gmail.com")
                 .build();
 
-        userRepository.save(userAccount);
+        accountRepository.save(account);
     }
 
     @DisplayName("유저 생성 테스트")
     @Test
     public void userCreateTest() {
-        UserAccount findUser = userRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(DUPLICATE_RESOURCE));
+        Account findUser = accountRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(DUPLICATE_RESOURCE));
         assertThat("nickname").isEqualTo(findUser.getNickname());
         assertThat("whdcks420").isNotEqualTo(findUser.getNickname());
         assertThat(passwordEncoder.matches("12345678", findUser.getPassword())).isTrue();
@@ -57,26 +57,26 @@ class UserAccountTest {
     @DisplayName("회원 정보 수정 테스트")
     @Test
     public void updateUserAccount() {
-        UserAccount userAccount = userRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        userService.update(userAccount.getId(), new UserUpdateRequestDto("11112222", "경기도", "010-5678-1234"));
+        Account account = accountRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        userService.update(account.getId(), new UserUpdateRequestDto("11112222", "경기도", "010-5678-1234"));
 
-        assertThat(userAccount.getAddress()).isEqualTo("경기도");
-        assertThat(userAccount.getPhone()).isEqualTo("010-5678-1234");
-        assertThat(passwordEncoder.matches("11112222", userAccount.getPassword())).isTrue();
+        assertThat(account.getAddress()).isEqualTo("경기도");
+        assertThat(account.getPhone()).isEqualTo("010-5678-1234");
+        assertThat(passwordEncoder.matches("11112222", account.getPassword())).isTrue();
     }
 
     @DisplayName("이메일 또는 닉네임 확인 테스트 성공")
     @Test
     public void findUserByNickOrEmailSuccess() {
-        assertThat(userRepository.existsByNicknameOrEmail("nickname", null)).isTrue();
-        assertThat(userRepository.existsByNicknameOrEmail(null, "Success@gmail.com")).isTrue();
+        assertThat(accountRepository.existsByNicknameOrEmail("nickname", null)).isTrue();
+        assertThat(accountRepository.existsByNicknameOrEmail(null, "Success@gmail.com")).isTrue();
     }
 
     @DisplayName("이메일 또는 닉네임 확인 테스트 실패")
     @Test
     public void findUserByNickOrEmailFail() {
-        assertThat(userRepository.existsByNicknameOrEmail("Fail", null)).isFalse();
-        assertThat(userRepository.existsByNicknameOrEmail(null, "Fail@gmail.com")).isFalse();
+        assertThat(accountRepository.existsByNicknameOrEmail("Fail", null)).isFalse();
+        assertThat(accountRepository.existsByNicknameOrEmail(null, "Fail@gmail.com")).isFalse();
     }
 
     @DisplayName("이메일 또는 닉네임 중복가입일 경우 오류 테스트")
@@ -93,10 +93,10 @@ class UserAccountTest {
     @DisplayName("회원 탈퇴 테스트")
     @Test
     public void leaveUserTest() {
-        UserAccount findUser = userRepository.findById(userAccount.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        Account findUser = accountRepository.findById(account.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         userService.delete(findUser.getId());
 
-        assertThatThrownBy(() -> userRepository.findById(findUser.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND)))
+        assertThatThrownBy(() -> accountRepository.findById(findUser.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND)))
                 .isInstanceOf(LetsEatException.class);
     }
 }
