@@ -1,11 +1,11 @@
 package com.letseat.api.requset;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 @Getter
 public class UserSignUpRequestDto {
@@ -28,4 +28,12 @@ public class UserSignUpRequestDto {
     @NotBlank
     private String phone;
 
+    @Builder
+    public UserSignUpRequestDto(String nickname, String password, String email, String address, String phone) {
+        this.nickname = nickname;
+        this.password = password;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+    }
 }

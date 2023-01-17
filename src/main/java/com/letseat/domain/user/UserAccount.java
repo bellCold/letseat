@@ -1,5 +1,6 @@
 package com.letseat.domain.user;
 
+import com.letseat.api.requset.UserUpdateRequestDto;
 import com.letseat.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,5 +40,11 @@ public class UserAccount extends BaseTimeEntity {
         this.phone = phone;
         this.address = address;
         this.userGrade = userGrade;
+    }
+
+    public void change(UserUpdateRequestDto userUpdateRequestDto, String newPassword) {
+        this.password = newPassword;
+        this.address = userUpdateRequestDto.getAddress();
+        this.phone = userUpdateRequestDto.getPhone();
     }
 }

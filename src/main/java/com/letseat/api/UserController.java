@@ -23,13 +23,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
-    public ResponseEntity<SuccessResponseDto> signUp(@Valid @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
+    public ResponseEntity<SuccessResponseDto> signup(@Valid @RequestBody UserSignUpRequestDto userSignUpRequestDto) {
         userService.createUser(userSignUpRequestDto);
         return SuccessResponseDto.toResponseEntity(SUCCESS_CREATE_USER);
     }
 
-//    @PutMapping("/update")
-//    public ResponseEntity<Void> change(@Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-//
-//    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<SuccessResponseDto> update(@PathVariable Long id, @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        userService.update(id, userUpdateRequestDto);
+        return SuccessResponseDto.toResponseEntity(SUCCESS_UPDATE_USER);
+    }
 }
