@@ -1,7 +1,7 @@
 package com.letseat.domain.user;
 
 import com.letseat.api.exception.LetsEatException;
-import com.letseat.api.requset.UserSignUpRequestDto;
+import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
 import com.letseat.application.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,12 +82,12 @@ class AccountTest {
     @DisplayName("이메일 또는 닉네임 중복가입일 경우 오류 테스트")
     @Test
     public void duplicateCreateAccountTest() {
-        UserSignUpRequestDto userSignUpRequestDto = UserSignUpRequestDto.builder()
+        SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
                 .nickname("nickname")
                 .email("Success@gmail.com")
                 .build();
 
-        assertThatThrownBy(() -> userService.createUser(userSignUpRequestDto)).isInstanceOf(LetsEatException.class);
+        assertThatThrownBy(() -> userService.createUser(signUpRequestDto)).isInstanceOf(LetsEatException.class);
     }
 
     @DisplayName("회원 탈퇴 테스트")

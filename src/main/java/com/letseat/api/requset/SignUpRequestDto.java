@@ -1,5 +1,7 @@
 package com.letseat.api.requset;
 
+import com.letseat.domain.user.Account;
+import com.letseat.domain.user.UserRole;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @NoArgsConstructor
-public class UserSignUpRequestDto {
+public class SignUpRequestDto {
 
     @NotBlank
     @Length(min = 3, max = 20)
@@ -31,11 +33,23 @@ public class UserSignUpRequestDto {
     private String phone;
 
     @Builder
-    public UserSignUpRequestDto(String nickname, String password, String email, String address, String phone) {
+    public SignUpRequestDto(String nickname, String password, String email, String address, String phone) {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
         this.address = address;
         this.phone = phone;
+    }
+
+
+    public Account toEntity() {
+        return Account.builder()
+                .nickname(this.nickname)
+                .address(this.address)
+                .password(this.password)
+                .email(this.email)
+                .phone(this.phone)
+                .userGrade(UserRole.BASIC)
+                .build();
     }
 }

@@ -1,46 +1,35 @@
 package com.letseat.global.config.jwt;
 
+import com.letseat.application.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Key;
 import java.util.Date;
 
+import static org.apache.tomcat.websocket.Constants.AUTHORIZATION_HEADER_NAME;
+
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtProvider extends Jwt<String> {
 
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-
-    private Key key;
+    private final UserDetailsService userService;
 
     private long tokenValidTime = 30 * 24 * 60 * 60 * 1000L;
 
     private long refreshTokenValidTime = 365 * 24 * 60 * 60 * 1000L;
 
-    public static final String HEADER_NAME = "Authorization";
-
-    @PostConstruct
-    protected void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    public String createToken(String sub) {
+    public String generateToken(String sub) {
         Claims claims = Jwts.claims().setSubject(sub);
         Date date = new Date();
         return Jwts.builder()
@@ -51,7 +40,7 @@ public class JwtProvider extends Jwt<String> {
                 .compact();
     }
 
-    public String createRefreshToken(String sub) {
+    public String generateRefreshToken(String sub) {
         Claims claims = Jwts.claims().setSubject(sub);
         Date date = new Date();
         return Jwts.builder()
@@ -62,8 +51,8 @@ public class JwtProvider extends Jwt<String> {
                 .compact();
     }
 
-    public Authentication getAuthentication(String token, UserDetailsService userDetailsService) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getInfoFromToken(token));
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userService.loadUserByUsername(getInfoFromToken(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
@@ -79,13 +68,12 @@ public class JwtProvider extends Jwt<String> {
 
     public String getTokenFromHeader(HttpServletRequest request) {
         checkEmptyToken(request);
-        return request.getHeader(HEADER_NAME).replace("Bearer", "").trim();
+        return request.getHeader(AUTHORIZATION_HEADER_NAME).replace("Bearer", "").trim();
     }
 
     private void checkEmptyToken(HttpServletRequest request) {
-        if (request.getHeader(HEADER_NAME) == null) {
-            // TODO 수정 custom exception 만들기
-            throw new RuntimeException();
+        if (request.getHeader(AUTHORIZATION_HEADER_NAME) == null) {
+            log.warn("empty token", new RuntimeException());
         }
     }
 
@@ -99,5 +87,9 @@ public class JwtProvider extends Jwt<String> {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader(AUTHORIZATION_HEADER_NAME);
     }
 }

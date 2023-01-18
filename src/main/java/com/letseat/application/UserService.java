@@ -1,53 +1,52 @@
 package com.letseat.application;
 
 import com.letseat.api.exception.LetsEatException;
-import com.letseat.api.requset.UserSignUpRequestDto;
+import com.letseat.api.requset.SignInRequestDto;
+import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
+import com.letseat.api.response.SignInResponseDto;
 import com.letseat.domain.user.Account;
 import com.letseat.domain.user.AccountRepository;
 import com.letseat.domain.user.UserAccount;
-import com.letseat.domain.user.UserRole;
 import com.letseat.global.config.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.letseat.api.exception.ErrorCode.DUPLICATE_RESOURCE;
-import static com.letseat.api.exception.ErrorCode.USER_NOT_FOUND;
+import static com.letseat.api.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
     @Transactional
-    public void createUser(UserSignUpRequestDto userSignUpRequestDto) {
-        validate(userSignUpRequestDto.getNickname(), userSignUpRequestDto.getEmail());
+    public void createUser(SignUpRequestDto signUpRequestDto) {
+        validate(signUpRequestDto.getNickname(), signUpRequestDto.getEmail());
 
-        Account newAccount = Account.builder()
-                .nickname(userSignUpRequestDto.getNickname())
-                .password(passwordEncoder.encode(userSignUpRequestDto.getPassword()))
-                .phone(userSignUpRequestDto.getPhone())
-                .email(userSignUpRequestDto.getEmail())
-                .address(userSignUpRequestDto.getAddress())
-                .userGrade(UserRole.BASIC)
-                .build();
-
-        accountRepository.save(newAccount);
-
-        newAccount.updateToken(jwtProvider);
+        Account account = signUpRequestDto.toEntity();
+        account.encodePassword(passwordEncoder);
+        accountRepository.save(account);
     }
 
     private void validate(String nickname, String email) {
         if (accountRepository.existsByNicknameOrEmail(nickname, email)) {
             throw new LetsEatException(DUPLICATE_RESOURCE);
+        }
+    }
+
+    public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
+        Account account = accountRepository.findByNickname(signInRequestDto.getNickname()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        if (passwordEncoder.matches(signInRequestDto.getPassword(), account.getPassword())) {
+            return new SignInResponseDto(jwtProvider.generateToken(signInRequestDto.getNickname()), jwtProvider.generateRefreshToken(signInRequestDto.getNickname()));
+        } else {
+            throw new LetsEatException(PASSWORD_VERIFY);
         }
     }
 
@@ -63,9 +62,4 @@ public class UserService implements UserDetailsService {
         accountRepository.delete(account);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String nicknameOrEmail) throws UsernameNotFoundException {
-        Account account = accountRepository.findByNicknameOrEmail(nicknameOrEmail, nicknameOrEmail).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        return new UserAccount(account);
-    }
 }

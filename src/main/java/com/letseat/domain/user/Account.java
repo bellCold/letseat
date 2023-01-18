@@ -2,11 +2,11 @@ package com.letseat.domain.user;
 
 import com.letseat.api.requset.UserUpdateRequestDto;
 import com.letseat.domain.BaseTimeEntity;
-import com.letseat.global.config.jwt.JwtProvider;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 
@@ -38,10 +38,6 @@ public class Account extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole userGrade;
 
-    private String token;
-
-    private String refreshToken;
-
     @Builder
     public Account(String nickname, String password, String email, String phone, String address, UserRole userGrade) {
         this.nickname = nickname;
@@ -58,11 +54,7 @@ public class Account extends BaseTimeEntity {
         this.phone = userUpdateRequestDto.getPhone();
     }
 
-    public void updateToken(JwtProvider jwtProvider) {
-        String id = String.valueOf(this.id);
-        this.token = jwtProvider.createToken(id);
-        System.out.println(token);
-        this.refreshToken = jwtProvider.createRefreshToken(id);
-        System.out.println(refreshToken);
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
     }
 }
