@@ -1,10 +1,7 @@
 package com.letseat.global.config.jwt;
 
 import com.letseat.application.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +30,7 @@ public class JwtProvider extends Jwt<String> {
         Claims claims = Jwts.claims().setSubject(sub);
         Date date = new Date();
         return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims(claims)
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + tokenValidTime))
@@ -44,6 +42,7 @@ public class JwtProvider extends Jwt<String> {
         Claims claims = Jwts.claims().setSubject(sub);
         Date date = new Date();
         return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims(claims)
                 .setIssuedAt(date)
                 .setExpiration(new Date(date.getTime() + refreshTokenValidTime))
@@ -66,10 +65,10 @@ public class JwtProvider extends Jwt<String> {
                 .getSubject();
     }
 
-    public String getTokenFromHeader(HttpServletRequest request) {
-        checkEmptyToken(request);
-        return request.getHeader(AUTHORIZATION_HEADER_NAME).replace("Bearer", "").trim();
-    }
+//    public String getTokenFromHeader(HttpServletRequest request) {
+//        checkEmptyToken(request);
+//        return request.getHeader(AUTHORIZATION_HEADER_NAME).replace("Bearer", "").trim();
+//    }
 
     private void checkEmptyToken(HttpServletRequest request) {
         if (request.getHeader(AUTHORIZATION_HEADER_NAME) == null) {
@@ -90,6 +89,6 @@ public class JwtProvider extends Jwt<String> {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION_HEADER_NAME);
+        return request.getHeader(AUTHORIZATION_HEADER_NAME).replace("Bearer", "").trim();
     }
 }

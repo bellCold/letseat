@@ -1,3 +1,4 @@
+/*
 package com.letseat.api;
 
 import com.letseat.api.requset.WriteContentsRequestDto;
@@ -13,9 +14,10 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/write/{id}")
-    public ResponseEntity<Void> writeContents(@PathVariable Long id, @RequestBody WriteContentsRequestDto writeContentsRequestDto) {
-        boardService.writeContents(id, writeContentsRequestDto);
+    @PostMapping("/write")
+    public ResponseEntity<Void> writeContents( @RequestBody WriteContentsRequestDto writeContentsRequestDto) {
+        boardService.writeContents(writeContentsRequestDto);
         return ResponseEntity.ok().build();
     }
 }
+*/

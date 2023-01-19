@@ -1,3 +1,4 @@
+/*
 package com.letseat.application;
 
 import com.letseat.api.exception.LetsEatException;
@@ -18,7 +19,7 @@ public class BoardService {
     private final AccountRepository accountRepository;
     private final BoardRepository boardRepository;
 
-    public void writeContents(Long id, WriteContentsRequestDto writeContentsRequestDto) {
+    public void writeContents(WriteContentsRequestDto writeContentsRequestDto) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         Board board = Board.builder()
                 .title(writeContentsRequestDto.getTitle())
@@ -29,3 +30,4 @@ public class BoardService {
         boardRepository.save(board);
     }
 }
+*/

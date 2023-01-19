@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -24,14 +23,14 @@ public class WebSecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/users/**").permitAll()
-                .antMatchers("/boards/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .authorizeRequests()
+                .antMatchers("/users/sign-in", "/users/sign-up/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
