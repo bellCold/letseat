@@ -1,9 +1,10 @@
-package com.letseat.global.config.jwt;
+package com.letseat.global.jwt;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -22,11 +23,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = jwtProvider.resolveToken((HttpServletRequest) request);
-        if (token != null && jwtProvider.validateTokenIssuedDate(token)) {
+        if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            log.debug("유효한 JWT 토큰이 없습니다");
         }
         chain.doFilter(request, response);
     }

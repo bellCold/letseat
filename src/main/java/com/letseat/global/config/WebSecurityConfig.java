@@ -1,7 +1,7 @@
 package com.letseat.global.config;
 
-import com.letseat.global.config.jwt.JwtAuthenticationFilter;
-import com.letseat.global.config.jwt.JwtProvider;
+import com.letseat.global.jwt.JwtAuthenticationFilter;
+import com.letseat.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +23,15 @@ public class WebSecurityConfig {
         http
                 .httpBasic().disable()
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .formLogin().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)// 세션 사용 안하므로
                 .and()
+
                 .authorizeRequests()
-                .antMatchers("/users/sign-in", "/users/sign-up/**").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/users/login", "/users/signup").permitAll() // 인증 없이도 사용가능
+                .anyRequest().authenticated()// 인증되어야 사용 가능
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class); // 앞에 필터가 먼저 실행
 
         return http.build();
     }

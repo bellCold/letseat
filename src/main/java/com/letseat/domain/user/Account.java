@@ -38,14 +38,17 @@ public class Account extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private UserRole userGrade;
 
+    private String refreshToken;
+
     @Builder
-    public Account(String nickname, String password, String email, String phone, String address, UserRole userGrade) {
+    public Account(String nickname, String password, String email, String phone, String address, UserRole userGrade, String refreshToken) {
         this.nickname = nickname;
         this.password = password;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.userGrade = userGrade;
+        this.refreshToken = refreshToken;
     }
 
     public void change(UserUpdateRequestDto userUpdateRequestDto, String newPassword) {

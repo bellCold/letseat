@@ -1,5 +1,6 @@
-package com.letseat.global.config.jwt;
+package com.letseat.global.jwt;
 
+import com.letseat.api.response.TokenResponseDto;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,5 @@ public abstract class Jwt<T> {
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
-    public abstract String generateToken(T info);
-
-    public abstract T getInfoFromToken(String token);
+    public abstract TokenResponseDto generateToken(T info);
 }
