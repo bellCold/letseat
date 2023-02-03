@@ -6,9 +6,9 @@ import com.letseat.api.requset.UserUpdateRequestDto;
 import com.letseat.api.response.SuccessResponseDto;
 import com.letseat.api.response.TokenResponseDto;
 import com.letseat.application.UserService;
+import com.letseat.global.config.interceptor.LoginUserId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,8 +36,8 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<SuccessResponseDto> update(@Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
-        userService.update(userUpdateRequestDto);
+    public ResponseEntity<SuccessResponseDto> update(@LoginUserId String id, @Valid @RequestBody UserUpdateRequestDto userUpdateRequestDto) {
+        userService.update(id, userUpdateRequestDto);
         return SuccessResponseDto.toResponseEntity(SUCCESS_UPDATE_USER);
     }
 }

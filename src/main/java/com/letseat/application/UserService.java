@@ -56,8 +56,8 @@ public class UserService {
                 .build();
     }
 
-    public void update(UserUpdateRequestDto userUpdateRequestDto) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+    public void update(String nickname,UserUpdateRequestDto userUpdateRequestDto) {
+        Account account = accountRepository.findByNickname(nickname).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         account.change(userUpdateRequestDto, passwordEncoder.encode(userUpdateRequestDto.getPassword()));
     }
 

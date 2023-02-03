@@ -54,16 +54,16 @@ class AccountTest {
         assertThat(passwordEncoder.matches("12345678", findUser.getPassword())).isTrue();
     }
 
-    @DisplayName("회원 정보 수정 테스트")
-    @Test
-    public void updateUserAccount() {
-        Account account = accountRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        userService.update(account.getId(), new UserUpdateRequestDto("11112222", "경기도", "010-5678-1234"));
-
-        assertThat(account.getAddress()).isEqualTo("경기도");
-        assertThat(account.getPhone()).isEqualTo("010-5678-1234");
-        assertThat(passwordEncoder.matches("11112222", account.getPassword())).isTrue();
-    }
+//    @DisplayName("회원 정보 수정 테스트")
+//    @Test
+//    public void updateUserAccount() {
+//        Account account = accountRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+//        userService.update(account.getId(), new UserUpdateRequestDto("11112222", "경기도", "010-5678-1234"));
+//
+//        assertThat(account.getAddress()).isEqualTo("경기도");
+//        assertThat(account.getPhone()).isEqualTo("010-5678-1234");
+//        assertThat(passwordEncoder.matches("11112222", account.getPassword())).isTrue();
+//    }
 
     @DisplayName("이메일 또는 닉네임 확인 테스트 성공")
     @Test

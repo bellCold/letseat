@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,6 +20,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static com.letseat.global.constant.ProMoConstant.*;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
@@ -35,14 +35,15 @@ public class JwtProvider extends Jwt<Authentication> {
     private long refreshTokenValidTime;
 
     public TokenResponseDto generateToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
+        String authorities = authentication.getAuthorities()
+                .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining());
 
         Date date = new Date();
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("auth", authorities)
+                .claim(AUTH, authorities)
                 .setExpiration(new Date(date.getTime() + tokenValidTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -53,7 +54,7 @@ public class JwtProvider extends Jwt<Authentication> {
                 .compact();
 
         return TokenResponseDto.builder()
-                .grantType("Bearer")
+                .grantType(BEARER)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -62,14 +63,13 @@ public class JwtProvider extends Jwt<Authentication> {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 
-        if (claims.get("auth") == null) {
+        if (claims.get(AUTH) == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
 
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("auth").toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get(AUTH).toString().split(","))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
@@ -77,15 +77,19 @@ public class JwtProvider extends Jwt<Authentication> {
 
     private Claims parseClaims(String accessToken) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(accessToken)
+                    .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
     }
 
-    public Long getAccessTokenPayload(String accessToken) {
+    public String getPayloadByToken(String accessToken) {
         Claims claims = parseClaims(accessToken);
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {
@@ -106,7 +110,7 @@ public class JwtProvider extends Jwt<Authentication> {
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER + SPACE)) {
             return bearerToken.substring(7);
         }
         return null;
