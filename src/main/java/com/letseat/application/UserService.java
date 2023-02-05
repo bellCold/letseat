@@ -4,9 +4,10 @@ import com.letseat.api.exception.LetsEatException;
 import com.letseat.api.requset.SignInRequestDto;
 import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
+import com.letseat.api.response.TokenResponseDto;
 import com.letseat.domain.user.Account;
 import com.letseat.domain.user.AccountRepository;
-import com.letseat.api.response.TokenResponseDto;
+import com.letseat.global.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,7 +57,7 @@ public class UserService {
                 .build();
     }
 
-    public void update(String nickname,UserUpdateRequestDto userUpdateRequestDto) {
+    public void update(String nickname, UserUpdateRequestDto userUpdateRequestDto) {
         Account account = accountRepository.findByNickname(nickname).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         account.change(userUpdateRequestDto, passwordEncoder.encode(userUpdateRequestDto.getPassword()));
     }

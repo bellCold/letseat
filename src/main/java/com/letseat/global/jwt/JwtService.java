@@ -1,10 +1,8 @@
-package com.letseat.application;
+package com.letseat.global.jwt;
 
 import com.letseat.api.requset.SignInRequestDto;
-import com.letseat.global.jwt.JwtProvider;
 import com.letseat.api.response.TokenResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -16,8 +14,7 @@ public class JwtService {
     private final JwtProvider jwtProvider;
 
     public TokenResponseDto generateToken(SignInRequestDto signInRequestDto) {
-        AuthenticationManager authenticationManager = authenticationManagerBuilder.getObject();
-        Authentication authentication = authenticationManager.authenticate(signInRequestDto.toAuthentication());
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(signInRequestDto.toAuthentication());
         return jwtProvider.generateToken(authentication);
     }
 }
