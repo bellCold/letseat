@@ -53,8 +53,8 @@ public class Account extends BaseTimeEntity {
 
     public void change(UserUpdateRequestDto userUpdateRequestDto, String newPassword) {
         this.password = newPassword;
-        this.address = userUpdateRequestDto.getAddress();
-        this.phone = userUpdateRequestDto.getPhone();
+        this.address = userUpdateRequestDto.getNewAddress();
+        this.phone = userUpdateRequestDto.getNewPhone();
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

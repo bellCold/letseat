@@ -13,8 +13,8 @@ public class JwtService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
 
-    public TokenResponseDto generateToken(SignInRequestDto signInRequestDto) {
+    public TokenResponseDto generateToken(Long id, SignInRequestDto signInRequestDto) {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(signInRequestDto.toAuthentication());
-        return jwtProvider.generateToken(authentication);
+        return jwtProvider.generateToken(id,authentication);
     }
 }

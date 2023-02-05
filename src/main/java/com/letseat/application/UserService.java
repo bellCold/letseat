@@ -1,6 +1,7 @@
 package com.letseat.application;
 
 import com.letseat.api.exception.LetsEatException;
+import com.letseat.api.requset.DeleteUserDto;
 import com.letseat.api.requset.SignInRequestDto;
 import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
@@ -14,8 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.letseat.api.exception.ErrorCode.DUPLICATE_RESOURCE;
-import static com.letseat.api.exception.ErrorCode.USER_NOT_FOUND;
+import static com.letseat.api.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +46,9 @@ public class UserService {
     public TokenResponseDto signIn(SignInRequestDto signInRequestDto) {
         Account account = accountRepository.findByNickname(signInRequestDto.getNickname()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         if (!passwordEncoder.matches(signInRequestDto.getPassword(), account.getPassword())) {
-            throw new LetsEatException(USER_NOT_FOUND);
+            throw new LetsEatException(PASSWORD_MISMATCH);
         }
-        TokenResponseDto jwtToken = jwtService.generateToken(signInRequestDto);
+        TokenResponseDto jwtToken = jwtService.generateToken(account.getId(), signInRequestDto);
         log.info("{}님이 로그인 하였습니다.", signInRequestDto.getNickname());
         return TokenResponseDto.builder()
                 .grantType(jwtToken.getGrantType())
@@ -57,13 +57,16 @@ public class UserService {
                 .build();
     }
 
-    public void update(String nickname, UserUpdateRequestDto userUpdateRequestDto) {
-        Account account = accountRepository.findByNickname(nickname).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        account.change(userUpdateRequestDto, passwordEncoder.encode(userUpdateRequestDto.getPassword()));
+    public void update(Long id, UserUpdateRequestDto userUpdateRequestDto) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        account.change(userUpdateRequestDto, passwordEncoder.encode(userUpdateRequestDto.getNewPassword()));
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, DeleteUserDto deleteUserDto) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        if(!passwordEncoder.matches(deleteUserDto.getPassword(), account.getPassword())) {
+            throw new LetsEatException(PASSWORD_MISMATCH);
+        }
         accountRepository.delete(account);
     }
 

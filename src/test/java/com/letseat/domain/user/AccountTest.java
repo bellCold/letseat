@@ -1,9 +1,11 @@
 package com.letseat.domain.user;
 
 import com.letseat.api.exception.LetsEatException;
+import com.letseat.api.requset.DeleteUserDto;
 import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
 import com.letseat.application.UserService;
+import org.hibernate.criterion.EmptyExpression;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,16 +56,16 @@ class AccountTest {
         assertThat(passwordEncoder.matches("12345678", findUser.getPassword())).isTrue();
     }
 
-//    @DisplayName("회원 정보 수정 테스트")
-//    @Test
-//    public void updateUserAccount() {
-//        Account account = accountRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-//        userService.update(account.getId(), new UserUpdateRequestDto("11112222", "경기도", "010-5678-1234"));
-//
-//        assertThat(account.getAddress()).isEqualTo("경기도");
-//        assertThat(account.getPhone()).isEqualTo("010-5678-1234");
-//        assertThat(passwordEncoder.matches("11112222", account.getPassword())).isTrue();
-//    }
+    @DisplayName("회원 정보 수정 테스트")
+    @Test
+    public void updateUserAccount() {
+        Account account = accountRepository.findByNickname("nickname").orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        userService.update(account.getId(), new UserUpdateRequestDto("11112222", "경기도", "010-5678-1234"));
+
+        assertThat(account.getAddress()).isEqualTo("경기도");
+        assertThat(account.getPhone()).isEqualTo("010-5678-1234");
+        assertThat(passwordEncoder.matches("11112222", account.getPassword())).isTrue();
+    }
 
     @DisplayName("이메일 또는 닉네임 확인 테스트 성공")
     @Test
@@ -93,10 +95,15 @@ class AccountTest {
     @DisplayName("회원 탈퇴 테스트")
     @Test
     public void leaveUserTest() {
-        Account findUser = accountRepository.findById(account.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        userService.delete(findUser.getId());
-
-        assertThatThrownBy(() -> accountRepository.findById(findUser.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND)))
+        userService.delete(account.getId(), new DeleteUserDto("12345678"));
+        assertThatThrownBy(() -> accountRepository.findById(account.getId()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND)))
                 .isInstanceOf(LetsEatException.class);
     }
+
+    @DisplayName("회원 탈퇴 실패 테스트")
+    @Test
+    public void fail_LeaveUserTest() {
+        assertThatThrownBy(() -> userService.delete(account.getId(), new DeleteUserDto("123412678"))).isInstanceOf(LetsEatException.class);
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.letseat.global.config.interceptor;
 
-import com.letseat.global.config.interceptor.LoginUserId;
 import com.letseat.global.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -25,7 +24,7 @@ public class LoginUserIdArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUserId.class) && parameter.getParameterType().equals(String.class);
+        return parameter.hasParameterAnnotation(LoginUserId.class) && parameter.getParameterType().equals(Long.class);
     }
 
     @Override

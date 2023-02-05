@@ -2,6 +2,8 @@ package com.letseat.global.jwt;
 
 import com.letseat.api.response.TokenResponseDto;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -26,7 +30,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class JwtProvider extends Jwt<Authentication> {
+public class JwtProvider {
 
     @Value("${jwt.token.valid-time}")
     private long tokenValidTime;
@@ -34,7 +38,17 @@ public class JwtProvider extends Jwt<Authentication> {
     @Value("${jwt.refresh.token.valid-time}")
     private long refreshTokenValidTime;
 
-    public TokenResponseDto generateToken(Authentication authentication) {
+    @Value("${jwt.secret-key}")
+    private String secretKey;
+
+    private Key key;
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+    }
+
+    public TokenResponseDto generateToken(Long id, Authentication authentication) {
         String authorities = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
@@ -42,7 +56,7 @@ public class JwtProvider extends Jwt<Authentication> {
 
         Date date = new Date();
         String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(String.valueOf(id))
                 .claim(AUTH, authorities)
                 .setExpiration(new Date(date.getTime() + tokenValidTime))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -87,9 +101,9 @@ public class JwtProvider extends Jwt<Authentication> {
         }
     }
 
-    public String getPayloadByToken(String accessToken) {
+    public Long getPayloadByToken(String accessToken) {
         Claims claims = parseClaims(accessToken);
-        return claims.getSubject();
+        return Long.parseLong(claims.getSubject());
     }
 
     public boolean validateToken(String token) {
