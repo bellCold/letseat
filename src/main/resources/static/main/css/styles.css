@@ -7808,8 +7808,8 @@ textarea.form-control-lg {
 }
 
 .bg-primary {
-  --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+  /*--bs-bg-opacity: 1;*/
+  /*background-color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;*/
 }
 
 .bg-secondary {
@@ -11302,7 +11302,7 @@ html {
 }
 @media (min-width: 992px) {
   .page-section .page-section-heading {
-    font-size: 3rem;
+    font-size: 1.5rem;
     line-height: 2.5rem;
   }
 }
@@ -11433,7 +11433,7 @@ html {
 
 .masthead {
   padding-top: calc(6rem + 74px);
-  padding-bottom: 6rem;
+  /*padding-bottom: 6rem;*/
 }
 .masthead .masthead-heading {
   font-size: 2.75rem;
@@ -11448,11 +11448,13 @@ html {
 
 @media (min-width: 992px) {
   .masthead {
-    padding-top: calc(6rem + 104px);
-    padding-bottom: 6rem;
+    /*padding-top: calc(6rem + 104px);*/
+    /*padding-bottom: 6rem;*/
   }
   .masthead .masthead-heading {
-    font-size: 4rem;
+    font-weight: 400;
+    font-size: 1.5rem;
+    color: rgba(62, 62, 62);
     line-height: 3.5rem;
   }
   .masthead .masthead-subheading {
