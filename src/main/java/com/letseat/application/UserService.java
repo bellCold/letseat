@@ -44,17 +44,14 @@ public class UserService {
     }
 
     public TokenResponseDto signIn(SignInRequestDto signInRequestDto) {
-        Account account = accountRepository.findByNickname(signInRequestDto.getNickname()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        Account account = accountRepository.findByNickname(signInRequestDto.getEmail()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         if (!passwordEncoder.matches(signInRequestDto.getPassword(), account.getPassword())) {
             throw new LetsEatException(PASSWORD_MISMATCH);
         }
         TokenResponseDto jwtToken = jwtService.generateToken(account.getId(), signInRequestDto);
-        log.info("{}님이 로그인 하였습니다.", signInRequestDto.getNickname());
-        return TokenResponseDto.builder()
-                .grantType(jwtToken.getGrantType())
-                .accessToken(jwtToken.getAccessToken())
-                .refreshToken(jwtToken.getRefreshToken())
-                .build();
+        log.info("{}님이 로그인 하였습니다.", signInRequestDto.getEmail());
+
+        return jwtToken;
     }
 
     public void update(Long id, UserUpdateRequestDto userUpdateRequestDto) {
@@ -64,7 +61,7 @@ public class UserService {
 
     public void delete(Long id, DeleteUserDto deleteUserDto) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        if(!passwordEncoder.matches(deleteUserDto.getPassword(), account.getPassword())) {
+        if (!passwordEncoder.matches(deleteUserDto.getPassword(), account.getPassword())) {
             throw new LetsEatException(PASSWORD_MISMATCH);
         }
         accountRepository.delete(account);

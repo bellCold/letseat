@@ -27,8 +27,10 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)// 세션 사용 안하므로
                 .and()
 
+                .antMatcher("resources/static/**")
+
                 .authorizeRequests()
-                .antMatchers("/users/login", "/users/signup").permitAll() // 인증 없이도 사용가능
+                .antMatchers("/", "/users/login", "/users/signup").permitAll() // 인증 없이도 사용가능
                 .anyRequest().authenticated()// 인증되어야 사용 가능
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class); // 앞에 필터가 먼저 실행

@@ -15,6 +15,6 @@ public class JwtService {
 
     public TokenResponseDto generateToken(Long id, SignInRequestDto signInRequestDto) {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(signInRequestDto.toAuthentication());
-        return jwtProvider.generateToken(id,authentication);
+         return jwtProvider.generateToken(id,authentication);
     }
 }
