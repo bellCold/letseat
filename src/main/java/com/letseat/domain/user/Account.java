@@ -21,18 +21,13 @@ public class Account extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String nickname;
-
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String phone;
 
-    @Column(nullable = false)
     private String address;
 
     @Enumerated(value = EnumType.STRING)
@@ -41,8 +36,7 @@ public class Account extends BaseTimeEntity {
     private String refreshToken;
 
     @Builder
-    public Account(String nickname, String password, String email, String phone, String address, UserRole userGrade, String refreshToken) {
-        this.nickname = nickname;
+    public Account(String password, String email, String phone, String address, UserRole userGrade, String refreshToken) {
         this.password = password;
         this.email = email;
         this.phone = phone;

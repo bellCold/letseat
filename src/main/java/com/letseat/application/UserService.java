@@ -29,27 +29,27 @@ public class UserService {
 
     @Transactional
     public void createUser(SignUpRequestDto signUpRequestDto) {
-        validate(signUpRequestDto.getNickname(), signUpRequestDto.getEmail());
+        validate(signUpRequestDto.getEmail());
 
         Account account = signUpRequestDto.toEntity();
         account.encodePassword(passwordEncoder);
         accountRepository.save(account);
-        log.info("{}님이 회원가입이 되었습니다.", signUpRequestDto.getNickname());
+        log.info("{}님이 회원가입이 되었습니다.", signUpRequestDto.getEmail());
+
     }
 
-    private void validate(String nickname, String email) {
-        if (accountRepository.existsByNicknameOrEmail(nickname, email)) {
+    private void validate(String email) {
+        if (accountRepository.existsByEmail(email)) {
             throw new LetsEatException(DUPLICATE_RESOURCE);
         }
     }
 
     public TokenResponseDto signIn(SignInRequestDto signInRequestDto) {
-        Account account = accountRepository.findByNickname(signInRequestDto.getEmail()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        Account account = accountRepository.findByEmail(signInRequestDto.getEmail()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
         if (!passwordEncoder.matches(signInRequestDto.getPassword(), account.getPassword())) {
             throw new LetsEatException(PASSWORD_MISMATCH);
         }
         TokenResponseDto jwtToken = jwtService.generateToken(account.getId(), signInRequestDto);
-        log.info("{}님이 로그인 하였습니다.", signInRequestDto.getEmail());
 
         return jwtToken;
     }

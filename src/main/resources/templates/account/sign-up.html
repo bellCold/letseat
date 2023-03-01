@@ -6,7 +6,7 @@
 <div class="limiter">
     <div class="container-login100">
         <div class="wrap-login100">
-            <form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="post">
+            <form class="login100-form validate-form p-l-55 p-r-55 p-t-178" th:action="@{/users/join}" method="post">
 					<span class="login100-form-title">
 						회원가입
 					</span>
@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="wrap-input100 validate-input m-b-16" data-validate="Password Double Check">
-                    <input class="input100" type="password" name="password" placeholder="비밀번호 재확인">
+                    <input class="input100" type="password" name="passwordConfirm" placeholder="비밀번호 재확인">
                     <span class="focus-input100"></span>
                 </div>
 

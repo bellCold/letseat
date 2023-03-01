@@ -5,50 +5,33 @@ import com.letseat.domain.user.UserRole;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class SignUpRequestDto {
-
-    @NotBlank
-    @Length(min = 3, max = 20)
-    private String nickname;
-
-    @NotBlank
-    @Length(min = 8, max = 50)
-    private String password;
 
     @Email
     @NotBlank
     private String email;
 
     @NotBlank
-    private String address;
+    @Length(min = 8, max = 50)
+    private String password;
 
     @NotBlank
-    private String phone;
-
-    @Builder
-    public SignUpRequestDto(String nickname, String password, String email, String address, String phone) {
-        this.nickname = nickname;
-        this.password = password;
-        this.email = email;
-        this.address = address;
-        this.phone = phone;
-    }
-
+    @Length(min = 8, max = 50)
+    private String passwordConfirm;
 
     public Account toEntity() {
         return Account.builder()
-                .nickname(this.nickname)
-                .address(this.address)
                 .password(this.password)
                 .email(this.email)
-                .phone(this.phone)
                 .userGrade(UserRole.BASIC)
                 .build();
     }

@@ -5,7 +5,6 @@ import com.letseat.api.requset.DeleteUserDto;
 import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
 import com.letseat.application.UserService;
-import org.hibernate.criterion.EmptyExpression;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,6 @@ class AccountTest {
     @BeforeEach
     public void createAccount() {
         account = Account.builder()
-                .nickname("nickname")
                 .password(passwordEncoder.encode("12345678"))
                 .userGrade(BASIC)
                 .address("seoul")
@@ -70,15 +68,15 @@ class AccountTest {
     @DisplayName("이메일 또는 닉네임 확인 테스트 성공")
     @Test
     public void findUserByNickOrEmailSuccess() {
-        assertThat(accountRepository.existsByNicknameOrEmail("nickname", null)).isTrue();
-        assertThat(accountRepository.existsByNicknameOrEmail(null, "Success@gmail.com")).isTrue();
+        assertThat(accountRepository.existsEmail("nickname", null)).isTrue();
+        assertThat(accountRepository.existsEmail(null, "Success@gmail.com")).isTrue();
     }
 
     @DisplayName("이메일 또는 닉네임 확인 테스트 실패")
     @Test
     public void findUserByNickOrEmailFail() {
-        assertThat(accountRepository.existsByNicknameOrEmail("Fail", null)).isFalse();
-        assertThat(accountRepository.existsByNicknameOrEmail(null, "Fail@gmail.com")).isFalse();
+        assertThat(accountRepository.existsEmail("Fail", null)).isFalse();
+        assertThat(accountRepository.existsEmail(null, "Fail@gmail.com")).isFalse();
     }
 
     @DisplayName("이메일 또는 닉네임 중복가입일 경우 오류 테스트")
