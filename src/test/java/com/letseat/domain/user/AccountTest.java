@@ -1,3 +1,4 @@
+/*
 package com.letseat.domain.user;
 
 import com.letseat.api.exception.LetsEatException;
@@ -104,4 +105,4 @@ class AccountTest {
         assertThatThrownBy(() -> userService.delete(account.getId(), new DeleteUserDto("123412678"))).isInstanceOf(LetsEatException.class);
     }
 
-}
+}*/

@@ -2,18 +2,25 @@ package com.letseat.application;
 
 import com.letseat.api.exception.LetsEatException;
 import com.letseat.api.requset.DeleteUserDto;
-import com.letseat.api.requset.SignInRequestDto;
 import com.letseat.api.requset.SignUpRequestDto;
 import com.letseat.api.requset.UserUpdateRequestDto;
-import com.letseat.api.response.TokenResponseDto;
 import com.letseat.domain.user.Account;
 import com.letseat.domain.user.AccountRepository;
-import com.letseat.global.jwt.JwtService;
+import com.letseat.domain.user.UserAccount;
+import com.letseat.domain.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.letseat.api.exception.ErrorCode.*;
 
@@ -21,11 +28,10 @@ import static com.letseat.api.exception.ErrorCode.*;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
 
     @Transactional
     public void createUser(SignUpRequestDto signUpRequestDto) {
@@ -34,24 +40,15 @@ public class UserService {
         Account account = signUpRequestDto.toEntity();
         account.encodePassword(passwordEncoder);
         accountRepository.save(account);
-        log.info("{}님이 회원가입이 되었습니다.", signUpRequestDto.getEmail());
+        log.info("{}님이 회원가입이 하였습니다.", signUpRequestDto.getEmail());
 
+        login(account);
     }
 
     private void validate(String email) {
         if (accountRepository.existsByEmail(email)) {
             throw new LetsEatException(DUPLICATE_RESOURCE);
         }
-    }
-
-    public TokenResponseDto signIn(SignInRequestDto signInRequestDto) {
-        Account account = accountRepository.findByEmail(signInRequestDto.getEmail()).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
-        if (!passwordEncoder.matches(signInRequestDto.getPassword(), account.getPassword())) {
-            throw new LetsEatException(PASSWORD_MISMATCH);
-        }
-        TokenResponseDto jwtToken = jwtService.generateToken(account.getId(), signInRequestDto);
-
-        return jwtToken;
     }
 
     public void update(Long id, UserUpdateRequestDto userUpdateRequestDto) {
@@ -67,4 +64,19 @@ public class UserService {
         accountRepository.delete(account);
     }
 
+    public void login(Account account) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                new UserAccount(account),
+                account.getPassword(),
+                List.of(new SimpleGrantedAuthority(UserRole.BASIC.toString())));
+        SecurityContextHolder.getContext().setAuthentication(token);
+
+        log.info("{}님이 로그인 하였습니다.", account.getEmail());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(email).orElseThrow(() -> new LetsEatException(USER_NOT_FOUND));
+        return new UserAccount(account);
+    }
 }
